@@ -52,7 +52,7 @@ for(i in unique(d.means$Domain)){
   for(j in unique(d.means$Stat)){
     print(paste(i, ":", j))
     gcms.ordered <- d.means %>% filter(Stat==j & Domain==i) %>% ungroup %>% select(GCM) %>% unlist
-    system.time( dx <- gcmEval(3, gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.lsm, bbox=domain,
+    system.time( dx <- gcmEval(which(names(domain)==i), gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.lsm, bbox=domain,
                                gcms=gcms.ordered, n=1000, type=type, composite=TRUE, composite.size=1:21, exact=TRUE, data=x) )
     saveRDS(dx, file=paste0("booterr_exact_", tolower(j), "_", tolower(gsub("_", "", i)), ".rds"))
   }
