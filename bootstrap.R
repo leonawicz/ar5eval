@@ -22,6 +22,7 @@ domain <- list(
 )
 type <- c("water", "land", rep("all", 7))
 
+set.seed(358)
 system.time( x <- mclapply(seq_along(domain), gcmEval, gcmDir=gcmDir, baseDir=eraDir,
                            surface.mask=era.lsm, bbox=domain, gcms=gcms, n=1000, type=type,
                            exact=FALSE, return.data=TRUE, mc.cores=length(domain)) )
@@ -33,17 +34,26 @@ d <- bind_rows(d)
 saveRDS(d, file="bootstrap_error.rds")
 
 d.std <- d %>% group_by(Domain, Stat, Sample, Var) %>% mutate(Val=(Val-mean(Val))/sd(Val))
-gcms.ordered <- d.std %>% group_by(Domain, Stat, GCM) %>% summarise(Mean=mean(Val)) %>% arrange(Domain, Stat, Mean) %>% 
-  filter(Stat=="RMSE" & Domain=="AK") %>% ungroup %>% select(GCM) %>% unlist
+d.means <- d.std %>% group_by(Domain, Stat, GCM) %>% summarise(Mean=mean(Val)) %>% arrange(Domain, Stat, Mean)
+
+# AK RMSE only
+gcms.akrmse <- d.means %>% filter(Stat=="RMSE" & Domain=="AK") %>% ungroup %>% select(GCM) %>% unlist
 
 system.time( d2 <- gcmEval(3, gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.lsm, bbox=domain, 
-                           gcms=gcms.ordered, n=1000, type=type, composite=TRUE, exact=FALSE, data=x) )
-saveRDS(d2, file="booterr_composites_fixed.rds")
+                           gcms=gcms.akrmse, n=1000, type=type, composite=TRUE, exact=FALSE, data=x) )
+saveRDS(d2, file="booterr_composites_fixed_ak_rmse.rds")
 
 system.time( d3 <- gcmEval(3, gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.lsm, bbox=domain,
                            gcms=gcms, n=1000, type=type, composite=TRUE, composite.size=1:21, exact=FALSE, data=x) )
-saveRDS(d3, file="booterr_composites_random.rds")
+saveRDS(d3, file="booterr_composites_random_ak_rmse.rds")
+# End AK RMSE only
 
-system.time( d4 <- gcmEval(3, gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.lsm, bbox=domain,
-                           gcms=gcms.ordered, n=1000, type=type, composite=TRUE, composite.size=1:21, exact=TRUE, data=x) )
-saveRDS(d4, file="booterr_exact.rds")
+for(i in unique(d.means$Domain)){
+  for(j in unique(d.means$Stat)){
+    print(paste(i, ":", j))
+    gcms.ordered <- d.means %>% filter(Stat==j & Domain==i) %>% ungroup %>% select(GCM) %>% unlist
+    system.time( dx <- gcmEval(3, gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.lsm, bbox=domain,
+                               gcms=gcms.ordered, n=1000, type=type, composite=TRUE, composite.size=1:21, exact=TRUE, data=x) )
+    saveRDS(dx, file=paste0("booterr_exact_", tolower(j), "_", tolower(gsub("_", "", i)), ".rds"))
+  }
+}
