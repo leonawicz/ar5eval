@@ -19,14 +19,13 @@ shinyServer(function(input, output, session) {
   })
   clrby <- reactive({ if(input$clrby=="") NULL else input$clrby })
   period <- reactive({ 
-    if(input$time=="Annual") "mean annual" else month.time[match(input$time, month.abb)] 
+    if(input$time=="Annual") "mean annual" else month.name[match(input$time, month.abb)] 
   })
   
   output$rankPlot <- renderPlot({
     if(is.null(input$spdom) || is.null(input$stat) || is.null(input$vars)) return()
     pos <- if(!is.null(clrby())) position_dodge(width=0.75) else "identity"
     subtitle <- paste("based on", period(), "error metric")
-    print(dsub())
     g <- ggplot(dsub(), 
       aes_string(x="GCM", y="Mean_Rank", ymin="Min_Rank", ymax="Max_Rank", colour=clrby())) +
       geom_point(position=pos) + geom_crossbar(width=0.5, position=pos)
