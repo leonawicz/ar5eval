@@ -26,7 +26,7 @@ spbootModUI <- function(id){
         fluidRow(
           column(6,
             selectInput(ns("var"), "Climate variable", 
-              c("Integrated", "Temperature"="tas", "Precipitation"="pr", "Sea level pressure"="psl"), width="100%")
+              c("Integrated"="integrated", "Temperature"="tas", "Precipitation"="pr", "Sea level pressure"="psl"), width="100%")
           ),
           column(6, 
             selectInput(ns("overlay"), "Cell overlay stats", 
