@@ -3,10 +3,8 @@ library(purrr)
 library(ggplot2)
 
 source("functions.R")
-lev <- c("Random", "Selected", "Individual")
 d <- readRDS("data/bootstrap_error.rds") %>% integrateVars
-d.comp <- readRDS("data/booterr_exact_rmse_ak.rds") %>% filter(Stat=="RMSE") %>%
-  mutate(Group=factor(Group, levels=lev))
+d.comp <- readRDS("data/booterr_exact_rmse_ak.rds") %>% filter(Stat=="RMSE")
 
 .plottheme <- theme(panel.grid.major=element_line(size = .5, color = "grey"),
                     plot.title=element_text(hjust=0),
