@@ -7,7 +7,7 @@
   mae <- colMeans(abs(dif), na.rm=T)
   mae0 <- colMeans(abs(dif-bias), na.rm=T)
   stats <- c("RMSE", "RMSE0", "MAE", "MAE0")
-  data.frame(Month=factor(month.abb, levels=month.abb),
+  data.frame(Month=factor(month.abb, levels=c("Annual", month.abb)),
              Stat=factor(rep(stats, each=12), levels=stats),
              Val=c(rmse, rmse0, mae, mae0)) %>% tbl_df
 }
@@ -32,9 +32,9 @@ combo <- function(size, n){
 # run once with return.data=TRUE and subsequently run gcmEval passing the returend data to 'data'
 # each time with return.data=FALSE
 gcmEval <- function(i, gcmDir, baseDir, surface.mask, bbox, gcms=list.files(gcmDir), n=1, 
-                    vars=c("pr", "tas", "psl"), type="all", land=1, water=0,
+                    vars=c("pr", "psl", "tas"), type="all", land=1, water=0,
                     composite=FALSE, composite.size=NULL, exact=TRUE, data=NULL, return.data=FALSE){
-  id <- names(bbox)[i]; bbox <- bbox[[i]]; type <- type[i]
+  doms <- names(bbox); id <- doms[i]; bbox <- bbox[[i]]; type <- type[i]
   cells <- cellsFromExtent(surface.mask, bbox)
   if(type=="land") cells <- cells[which(surface.mask[cells]==land)]
   if(type=="water") cells <- cells[which(surface.mask[cells]==water)]
@@ -125,9 +125,11 @@ gcmEval <- function(i, gcmDir, baseDir, surface.mask, bbox, gcms=list.files(gcmD
     }
   }
   
-  d <- bind_rows(d) %>% mutate(Domain=id)
+  d <- bind_rows(d) %>% 
+    mutate(Domain=factor(id, levels=doms), Var=factor(Var, levels=c("integrated", vars)))
   if(exact & composite){
     d <- select(d, Domain, Var, Stat, Month, Sample, GCM, Composite, Group, Val) %>%
+      mutate(Group=factor(Group, levels=c("Random", "Selected", "Individual"))) %>%
       arrange(Domain, Var, Stat, Month, Sample, Composite, Group)
   } else if(composite){
     d <- select(d, Domain, Var, Stat, Month, Sample, GCM, Composite, Val) %>%
@@ -140,11 +142,12 @@ gcmEval <- function(i, gcmDir, baseDir, surface.mask, bbox, gcms=list.files(gcmD
 }
 
 integrateVars <- function(x, append=TRUE){
+  lev <- unique(c("Integrated", levels(x$Var)))
   dots <- names(x)[!names(x) %in% c("Var", "GCM", "Month", "Val")]
   y <- x %>% group_by_(.dots=c(dots, "Var", "Sample")) %>% 
     mutate(Val=(Val-mean(Val))/sd(Val)) %>%
     group_by_(.dots=c(dots, "Month", "GCM", "Sample")) %>% 
-    summarise(Var="Integrated", Val=mean(Val)) %>% ungroup
+    summarise(Var=factor("Integrated", levels=lev), Val=mean(Val)) %>% ungroup
   if(append) bind_rows(x, y) else y
 }
 

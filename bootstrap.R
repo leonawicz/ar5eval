@@ -10,9 +10,9 @@ era.lsm <- raster("/Data/Base_Data/Climate/World/ERA40/era40_LSM.nc")
 source("../functions.R")
 
 domain <- list(
-  "AK_water"=extent(188,230,52,72),
-  "AK_land"=extent(188,230,52,72),
   "AK"=extent(188,230,52,72),
+  "AK_land"=extent(188,230,52,72),
+  "AK_water"=extent(188,230,52,72),
   "CAN"=extent(219,308,49,72),
   "AKCAN"=extent(188,308,49,72),
   "6090N"=extent(-1.25,358.75,60,90),
@@ -20,7 +20,7 @@ domain <- list(
   "low48"=extent(235,294,25,49),
   "pacif"=extent(132,208,-17,25)
 )
-type <- c("water", "land", rep("all", 7))
+type <- c("all", "water", "land", rep("all", 6))
 
 set.seed(358)
 system.time( x <- mclapply(seq_along(domain), gcmEval, gcmDir=gcmDir, baseDir=eraDir,
@@ -37,6 +37,7 @@ d.std <- d %>% group_by(Domain, Stat, Sample, Var) %>% mutate(Val=(Val-mean(Val)
 d.means <- d.std %>% group_by(Domain, Stat, GCM) %>% summarise(Mean=mean(Val)) %>% arrange(Domain, Stat, Mean)
 
 # AK RMSE only
+set.seed(476)
 gcms.akrmse <- d.means %>% filter(Stat=="RMSE" & Domain=="AK") %>% ungroup %>% select(GCM) %>% unlist
 
 system.time( d2 <- gcmEval(3, gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.lsm, bbox=domain, 
@@ -48,6 +49,7 @@ system.time( d3 <- gcmEval(3, gcmDir=gcmDir, baseDir=eraDir, surface.mask=era.ls
 saveRDS(d3, file="booterr_composites_random_ak_rmse.rds")
 # End AK RMSE only
 
+set.seed(697)
 for(i in unique(d.means$Domain)){
   for(j in unique(d.means$Stat)){
     print(paste(i, ":", j))
