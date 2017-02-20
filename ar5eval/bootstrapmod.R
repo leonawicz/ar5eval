@@ -89,7 +89,7 @@ spbootMod <- function(input, output, session, dom0, dom){
   hm_title <- "Estimated monthly error by GCM"
   hm_subtitle <- reactive({
     switch(input$var,
-      "Integrated"=expression(italic("Integrated variables are standardized to unitless error metric")),
+      "integrated"=expression(italic("Integrated variables are standardized to unitless error metric")),
       "pr"=expression(italic("Estimated precipitation error is in mm")),
       "psl"=expression(italic("Estimated sea level pressure error is in kPa")),
       "tas"=expression(italic("Estimated temperature error is in"~degree~C))
@@ -97,7 +97,7 @@ spbootMod <- function(input, output, session, dom0, dom){
   })
   lab_rnd <- reactive({
     if(input$overlay=="Val") 
-      x <- switch(input$var, "Integrated"=1, "pr"=0, "psl"=0, "tas"=1)
+      x <- switch(input$var, "integrated"=1, "pr"=0, "psl"=0, "tas"=1)
     if(input$overlay=="PropTop5") x <- 2
     if(input$overlay=="Mean_Rank") x <- 0
     x

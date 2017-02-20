@@ -36,8 +36,8 @@ gcmPlot <- function(x, var, type, size=1){
 
 gcmHeatmap <- function(data, x, y, fill="Val", lab=NULL, lab.rnd=2,
                        title="", subtitle="", xlb="", ylb="", legend.title="Estimated error"){
-  clrs <- switch(data$Var[1], 
-                 Integrated=c("white", "chocolate4"), 
+  clrs <- switch(as.character(data$Var[1]), 
+                 integrated=c("white", "chocolate4"), 
                  pr=c("white", "lightgreen", "darkgreen"), 
                  psl=c("white", "lightblue", "dodgerblue", "blue"), 
                  tas=c("white", "salmon", "red"))
