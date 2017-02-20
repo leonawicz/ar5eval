@@ -52,7 +52,7 @@ dashboardPage(
             fluidRow(
               column(3, selectInput("spdom", "Spatial domains", domains, "AK", multiple=TRUE, width="100%")),
               column(3, selectInput("stat", "Error statistic", err_stats, "RMSE", multiple=TRUE, width="100%")),
-              column(3, selectInput("vars", "Climate variable", variables, "Integrated", multiple=TRUE, width="100%")),
+              column(3, selectInput("vars", "Climate variable", variables, "integrated", multiple=TRUE, width="100%")),
               column(3, selectInput("time", "Time", c("Annual", month.abb), "Annual", width="100%"))
               ), status="primary", width=12
           )

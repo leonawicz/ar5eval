@@ -8,7 +8,7 @@ compositeModUI <- function(id){
       ),
       column(3,
         selectInput(ns("var"), "Climate variable", 
-          c("Integrated"="integrated", "Temperature"="tas", "Precipitation"="pr", "Sea level pressure"="psl"), width="100%")
+          c("Integrated"="integrated", "Temperature"="tas", "Precipitation"="pr", "Sea level pressure"="psl"), "integrated", width="100%")
       )
     ),
     fluidRow(
