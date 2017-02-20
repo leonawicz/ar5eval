@@ -47,27 +47,22 @@ dashboardPage(
     #),
     tabItems(
       tabItem(tabName="overview",
+        fluidRow(column(12, h4("Variable selection"))),
         fluidRow(
-          box(title="Variable selection", 
-            fluidRow(
-              column(3, selectInput("spdom", "Spatial domains", domains, "AK", multiple=TRUE, width="100%")),
-              column(3, selectInput("stat", "Error statistic", err_stats, "RMSE", multiple=TRUE, width="100%")),
-              column(3, selectInput("vars", "Climate variable", variables, "integrated", multiple=TRUE, width="100%")),
-              column(3, selectInput("time", "Time", c("Annual", month.abb), "Annual", width="100%"))
-              ), status="primary", width=12
-          )
+          column(3, selectInput("spdom", "Spatial domains", domains, "AK", multiple=TRUE, width="100%")),
+          column(3, selectInput("stat", "Error statistic", err_stats, "RMSE", multiple=TRUE, width="100%")),
+          column(3, selectInput("vars", "Climate variable", variables, "integrated", multiple=TRUE, width="100%")),
+          column(3, selectInput("time", "Time", c("Annual", month.abb), "Annual", width="100%"))
+        ),
+        fluidRow(box(title="", status="primary", width=12, height=0)),
+        fluidRow(
+          column(3, h4("GCM rankings and selection probability")),
+          column(3, selectInput("clrby", "Color by", grp_vars, width="100%")),
+          column(3, selectInput("fctby", "Facet by", grp_vars, width="100%")),
+          column(3, sliderInput("n_gcms", "Number of GCMs shown", 1, 21, 21, 1, width="100%"))
         ),
         fluidRow(column(12, plotOutput("rankPlot", height=275))),
-        fluidRow(column(12, plotOutput("top5Plot"))),
-        fluidRow(
-          box(title="Plot settings", 
-            fluidRow(
-              column(4, selectInput("clrby", "Color by", grp_vars, width="100%")),
-              column(4, selectInput("fctby", "Facet by", grp_vars, width="100%")),
-              column(4, sliderInput("n_gcms", "Number of GCMs shown", 1, 21, 21, 1, width="100%"))
-            ), status="primary", width=12
-          )
-        ), br()
+        fluidRow(column(12, plotOutput("top5Plot")))
       ),
       spbootModUI(id="sbAK"),
       spbootModUI(id="sbAK_land"),
