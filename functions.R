@@ -142,12 +142,13 @@ gcmEval <- function(i, gcmDir, baseDir, surface.mask, bbox, gcms=list.files(gcmD
 }
 
 integrateVars <- function(x, append=TRUE){
-  lev <- unique(c("Integrated", levels(x$Var)))
-  dots <- names(x)[!names(x) %in% c("Var", "GCM", "Month", "Val")]
+  lev <- unique(c("integrated", levels(x$Var)))
+  dots <- names(x)[!names(x) %in% c("Var", "GCM", "Month", "Sample", "Val")]
   y <- x %>% group_by_(.dots=c(dots, "Var", "Sample")) %>% 
     mutate(Val=(Val-mean(Val))/sd(Val)) %>%
     group_by_(.dots=c(dots, "Month", "GCM", "Sample")) %>% 
-    summarise(Var=factor("Integrated", levels=lev), Val=mean(Val)) %>% ungroup
+    summarise(Var="integrated", Val=mean(Val)) %>% ungroup %>%
+    mutate(Var=factor(Var, levels=lev))
   if(append) bind_rows(x, y) else y
 }
 
