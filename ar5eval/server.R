@@ -14,35 +14,41 @@ library(ggplot2)
 shinyServer(function(input, output, session) {
   
   dsub <- reactive({ 
-    map(d, ~filter(.x, Domain %in% input$spdom & Stat %in% input$stat & Var %in% input$vars) %>%
-          group_by(Domain, Stat, Var) %>% filter(rank(Mean_Rank) <= input$n_gcms) %>% ungroup)
+    filter(d, Domain %in% input$spdom & Stat %in% input$stat & Var %in% input$vars & Period %in% input$time) %>%
+          group_by(Domain, Stat, Var) %>% filter(rank(Mean_Rank) <= input$n_gcms) %>% ungroup
   })
   clrby <- reactive({ if(input$clrby=="") NULL else input$clrby })
+  period <- reactive({ 
+    if(input$time=="Annual") "mean annual" else month.time[match(input$time, month.abb)] 
+  })
   
   output$rankPlot <- renderPlot({
     if(is.null(input$spdom) || is.null(input$stat) || is.null(input$vars)) return()
-    pos <- if(!is.null(clrby)) position_dodge(width=0.75) else "identity"
-    g <- ggplot(dsub()$sb.ann, 
+    pos <- if(!is.null(clrby())) position_dodge(width=0.75) else "identity"
+    subtitle <- paste("based on", period(), "error metric")
+    print(dsub())
+    g <- ggplot(dsub(), 
       aes_string(x="GCM", y="Mean_Rank", ymin="Min_Rank", ymax="Max_Rank", colour=clrby())) +
       geom_point(position=pos) + geom_crossbar(width=0.5, position=pos)
     if(input$fctby!="") g <- g + facet_wrap(as.formula(paste0("~", input$fctby)), scales="free")
     g + .plottheme + 
       theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
       labs(title="Spatial bootstrap GCM performance rankings", 
-           subtitle=expression(italic("based on mean annual error metric")), 
+           subtitle=bquote(italic(.(subtitle))), 
            y="Bootstrap GCM rank range and mean")
   })
   
   output$top5Plot <- renderPlot({
     if(is.null(input$spdom) || is.null(input$stat) || is.null(input$vars)) return()
-    pos <- if(!is.null(clrby)) position_dodge(width=0.75) else "identity"
-    g <- ggplot(dsub()$sb.ann, 
+    pos <- if(!is.null(clrby())) position_dodge(width=0.75) else "identity"
+    subtitle <- paste(period(), "spatial bootstrap of GCM ranking fifth or better")
+    g <- ggplot(dsub(), 
                 aes_string(x="GCM", y="PropTop5", fill=clrby())) +
       geom_bar(stat="identity", position=pos, colour="black", width=0.5)
     if(input$fctby!="") g <- g + facet_wrap(as.formula(paste0("~", input$fctby)), scales="free")
     g + .plottheme + theme(axis.text.x=element_text(angle=45, hjust=1, vjust=1)) +
       labs(title="Probability of GCM among top five performers", 
-           subtitle=expression(italic("spatial bootstrap of GCM ranking fifth or better")), 
+           subtitle=bquote(italic(.(subtitle))), 
            x="GCM", y="P(among top five performing GCMs)")
   })
   
