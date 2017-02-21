@@ -15,8 +15,7 @@ gcmPlot <- function(x, var, type, size=1){
       annotate("text", Inf, Inf, label=lbl, hjust = 1, vjust = 1) +
       labs(title=paste0("Selected ", size, "-GCM composite"), 
            subtitle=expression(italic("among ensembles of opportunity")),
-           x=prime.lab, y="Density") +
-      .plottheme
+           x=prime.lab, y="Density")
     return(g)
   }
   
@@ -31,7 +30,7 @@ gcmPlot <- function(x, var, type, size=1){
     labs(title="Estimated error", subtitle="by composite GCM size",
          x="Number of GCMs in composite", y=prime.lab) +
     scale_colour_manual(values=c("orange", "black", "royalblue"))
-  g + .plottheme
+  g
 }
 
 gcmHeatmap <- function(data, x, y, fill="Val", lab=NULL, lab.rnd=2,
@@ -50,6 +49,6 @@ gcmHeatmap <- function(data, x, y, fill="Val", lab=NULL, lab.rnd=2,
   }
   g + scale_fill_gradientn(colours=clrs) +
     labs(title=title, subtitle=subtitle, x=xlb, y=ylb) +
-    scale_y_discrete(position="right") + 
+    scale_y_discrete(position="right") + scale_x_discrete(expand=c(0,0)) +
     guides(fill=guide_legend(title=legend.title))
 }
