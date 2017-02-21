@@ -49,9 +49,9 @@ dashboardPage(
       tabItem(tabName="overview",
         fluidRow(column(12, h4("Variable selection"))),
         fluidRow(
-          column(3, selectInput("spdom", "Spatial domains", domains, "AK", multiple=TRUE, width="100%")),
           column(3, selectInput("stat", "Error statistic", err_stats, "RMSE", multiple=TRUE, width="100%")),
           column(3, selectInput("vars", "Climate variable", variables, "integrated", multiple=TRUE, width="100%")),
+          column(3, selectInput("spdom", "Spatial domains", domains, "AK", multiple=TRUE, width="100%")),
           column(3, selectInput("time", "Time", c("Annual", month.abb), "Annual", width="100%"))
         ),
         fluidRow(box(title="", status="primary", width=12, height=0)),
