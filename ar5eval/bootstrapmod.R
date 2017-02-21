@@ -1,6 +1,7 @@
 spbootModUI <- function(id){
   ns <- NS(id)
   tabItem(tabName=id,
+    fluidRow(column(12, h4("Variable selection"))),
     fluidRow(
       column(3,
         selectInput(ns("stat"), "Error statistic", 
@@ -38,18 +39,8 @@ spbootModUI <- function(id){
   )
 }
 
-spbootMod <- function(input, output, session, dom0, dom){
+spbootMod <- function(input, output, session, dom0, dom, .theme){
   ns <- session$ns
-  
-  .plottheme <- theme(panel.grid.major=element_line(size = .5, color = "grey"),
-                      plot.title=element_text(hjust=0),
-                      axis.line=element_line(size=.7, color="black"),
-                      axis.ticks.length=unit(0.35,"cm"),
-                      legend.position="bottom",
-                      text = element_text(size=14),
-                      panel.spacing.x=unit(0.25,"cm"),
-                      plot.margin=unit(c(0.5, 1, 0.5, 0.5),"cm"),
-                      strip.text=element_text(size=14))
   
   stat <- reactive(input$stat)
   d <- reactive({ 
@@ -77,7 +68,7 @@ spbootMod <- function(input, output, session, dom0, dom){
       labs(title=paste0("Sampling distributions of ", stat.lab(), " by GCM"), 
            subtitle=expression(italic("based on spatial bootstrap resampling")),
            x=xlb, y="Density") +
-      .plottheme
+      .theme
     g
   })
   
@@ -109,12 +100,12 @@ spbootMod <- function(input, output, session, dom0, dom){
       gcmHeatmap(filter(d()$sb.hm1, Var==input$var & Group=="Individual"), "Month", "GCM", 
         lab=lab(), lab.rnd=lab_rnd(), 
         title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="GCM") +
-        .plottheme
+        .theme
     } else {
       gcmHeatmap(filter(d()$sb.hm2, Var==input$var), "Month", "GCM", 
         lab=lab(), lab.rnd=lab_rnd(),
         title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="GCM") +
-        .plottheme
+        .theme
     }
   })
 }
