@@ -25,7 +25,7 @@ compositeModUI <- function(id){
         tabPanel("Monthly error maps", 
           fluidRow(
            box(title="Sequential selected GCMs", plotOutput(ns("hmap_sel"), height=600), status="primary", width=6),
-           box(title="Random ensebles of opportunity", plotOutput(ns("hmap_ran"), height=600), status="primary", width=6)
+           box(title="Random ensembles of opportunity", plotOutput(ns("hmap_ran"), height=600), status="primary", width=6)
           )
         ),
         id="ensembles", selected="Monthly error maps", title="Selected composites and random ensembles", width=12, side="right"
