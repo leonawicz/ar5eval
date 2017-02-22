@@ -44,12 +44,15 @@ dashboardPage(
   ),
   dashboardBody(
     #includeCSS("www/styles.css"),
-    #bsModal("staticmap", "Fire Management Zones", "btn_staticmap", size="large",
-    #        img(src='Fire_Mgmt_Areas.png', align="center", style="width: 100%")
-    #),
+    bsModal("staticmap", "AR5 GCM evalutation spatial domains", "btn_staticmap", size="large",
+            img(src='domain_map.png', align="center", style="width: 100%")
+    ),
     tabItems(
       tabItem(tabName="overview",
-        fluidRow(column(12, h4("Variable selection"))),
+        fluidRow(
+          column(9, h4("Variable selection")),
+          column(3, actionButton("btn_staticmap", "Domain map", class="btn-block", icon("globe")))
+        ),
         fluidRow(
           column(3, selectInput("stat", "Error statistic", err_stats, "RMSE", multiple=TRUE, width="100%")),
           column(3, selectInput("vars", "Climate variable", variables, "integrated", multiple=TRUE, width="100%")),
