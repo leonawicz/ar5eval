@@ -1,7 +1,10 @@
 compositeModUI <- function(id){
   ns <- NS(id)
   tabItem(tabName=id,
-    fluidRow(column(12, h4("Variable selection"))),
+    fluidRow(
+      column(9, h4("Variable selection")),
+      column(3, actionButton(ns("gcm_order_info"), "GCM inclusion order", class="btn-block", icon("info-circle")))
+    ),
     fluidRow(
       column(3,
         selectInput(ns("stat"), "Error statistic", 
@@ -15,17 +18,34 @@ compositeModUI <- function(id){
     fluidRow(
       tabBox(
         tabPanel("Permutation tests",
-          fluidRow(
-           box(title="Selected composite permutation test", 
-               plotOutput(ns("perm_one"), height=560), sliderInput(ns("size"), "Composite size", 1, 21, 5, 1, width="50%"),
-               status="primary", width=6),
-           box(title="Estimated error and p-values vs. composite size", plotOutput(ns("perm_all"), height=600), status="primary", width=6)
+          div(id="plot-container",
+            fluidRow(
+             box(title="Selected composite permutation test", 
+                 plotOutput(ns("perm_one"), height=560), 
+                 fluidRow(column(6, sliderInput(ns("size"), "Composite size", 1, 21, 5, 1, width="100%"))),
+                 status="primary", width=6),
+             box(title="Estimated error and p-values vs. composite size", 
+                 plotOutput(ns("perm_all"), height=600), 
+                 status="primary", width=6)
+            ),
+            conditionalPanel(
+              sprintf("output['%s'] == null", ns("perm_one")), 
+              h4("Loading data", style="position: absolute; left: 0; top: 40%; right: 0; text-align: center;"),
+              tags$img(src="spinner.gif", id="loading-spinner")
+            )
           )
         ),
         tabPanel("Monthly error maps", 
-          fluidRow(
-           box(title="Sequential selected GCMs", plotOutput(ns("hmap_sel"), height=600), status="primary", width=6),
-           box(title="Random ensembles of opportunity", plotOutput(ns("hmap_ran"), height=600), status="primary", width=6)
+          div(id="plot-container",
+            fluidRow(
+             box(title="Sequential selected GCMs", plotOutput(ns("hmap_sel"), height=600), status="primary", width=6),
+             box(title="Random ensembles of opportunity", plotOutput(ns("hmap_ran"), height=600), status="primary", width=6)
+            ),
+            conditionalPanel(
+              sprintf("output['%s'] == null", ns("hmap_sel")), 
+              h4("Loading data", style="position: absolute; left: 0; top: 40%; right: 0; text-align: center;"),
+              tags$img(src="spinner.gif", id="loading-spinner")
+            )
           )
         ),
         id="ensembles", selected="Monthly error maps", title="Selected composites and random ensembles", width=12, side="right"
@@ -34,12 +54,20 @@ compositeModUI <- function(id){
   )
 }
 
-compositeMod <- function(input, output, session, dom0, dom, .theme){
+compositeMod <- function(input, output, session, dom0, dom, .theme, ...){
   ns <- session$ns
   stat <- reactive(input$stat)
+
+  observeEvent(input$gcm_order_info, {
+    showModal(modalDialog(
+      title="About GCM inclusion order", list(...)$info, size="l", easyClose=TRUE, footer=NULL
+    ))
+  })
+  
   d <- reactive({ 
     if(dom()==dom0) readRDS(paste0("data/", stat(), "_", dom(), ".rds")) else NULL
   })
+
   
   hm_title <- "Estimated monthly error: composites of lowest-error GCMs"
   hm_title2 <- "Estimated monthly error: random ensembles"
