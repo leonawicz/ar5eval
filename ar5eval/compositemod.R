@@ -13,8 +13,23 @@ compositeModUI <- function(id){
       )
     ),
     fluidRow(
-      box(title="Sequential selected GCMs", plotOutput(ns("hmap_sel"), height=600), status="primary", width=6),
-      box(title="Random ensebles of opportunity", plotOutput(ns("hmap_ran"), height=600), status="primary", width=6)
+      tabBox(
+        tabPanel("Permutation tests",
+          fluidRow(
+           box(title="Selected composite permutation test", 
+               plotOutput(ns("perm_one"), height=560), sliderInput(ns("size"), "Composite size", 1, 21, 5, 1, width="50%"),
+               status="primary", width=6),
+           box(title="Estimated error and p-values vs. composite size", plotOutput(ns("perm_all"), height=600), status="primary", width=6)
+          )
+        ),
+        tabPanel("Monthly error maps", 
+          fluidRow(
+           box(title="Sequential selected GCMs", plotOutput(ns("hmap_sel"), height=600), status="primary", width=6),
+           box(title="Random ensebles of opportunity", plotOutput(ns("hmap_ran"), height=600), status="primary", width=6)
+          )
+        ),
+        id="ensembles", selected="Monthly error maps", title="Selected composites and random ensembles", width=12, side="right"
+      )
     )
   )
 }
@@ -53,5 +68,15 @@ compositeMod <- function(input, output, session, dom0, dom, .theme){
                lab="Val", lab.rnd=lab_rnd(), 
                title=hm_title2, subtitle=hm_subtitle(), xlb="Month", ylb="Number of GCMs in composite") +
       .theme + geom_hline(yintercept=21 - c(4.5, 5.5) + 1, linetype=2)
+  })
+  
+  output$perm_one <- renderPlot({
+    req(d())
+    gcmPlot(d()$re, input$var, "histogram", size=input$size) + .theme
+  })
+  output$perm_all <- renderPlot({
+    req(d())
+    gcmPlot(d()$re, input$var, "line") + .theme + scale_x_continuous(breaks=1:21) +
+      geom_vline(xintercept=input$size, size=1, linetype=2)
   })
 }
