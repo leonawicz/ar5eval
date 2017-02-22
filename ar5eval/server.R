@@ -15,6 +15,14 @@ shinyServer(function(input, output, session) {
   
   source("tour.R", local=TRUE) # introjs tour
   
+  observeEvent(input$staticmap, {
+    showModal(modalDialog(
+      title="AR5 GCM evalutation spatial domains",
+      img(src='domain_map.png', align="center", style="width: 100%"),
+      size="l", easyClose=TRUE, footer=NULL
+      ))
+  })
+  
   dsub <- reactive({ 
     x <- filter(d, Domain %in% input$spdom & Stat %in% input$stat & 
                   Var %in% input$vars & Period %in% input$time) %>%
@@ -60,24 +68,6 @@ shinyServer(function(input, output, session) {
   })
   
   dom <- reactive(input$tabs)
-  
-  callModule(spbootMod, "sbAK", "AK", dom, .theme)
-  callModule(spbootMod, "sbAK_land", "AK_land", dom, .theme)
-  callModule(spbootMod, "sbAK_water", "AK_water", dom, .theme)
-  callModule(spbootMod, "sbCAN", "CAN", dom, .theme)
-  callModule(spbootMod, "sbAKCAN", "AKCAN", dom, .theme)
-  callModule(spbootMod, "sb6090N", "6090N", dom, .theme)
-  callModule(spbootMod, "sb2090N", "2090N", dom, .theme)
-  callModule(spbootMod, "sblow48", "low48", dom, .theme)
-  callModule(spbootMod, "sbpacif", "pacif", dom, .theme)
-  
-  callModule(compositeMod, "AK", "AK", dom, .theme)
-  callModule(compositeMod, "AK_land", "AK_land", dom, .theme)
-  callModule(compositeMod, "AK_water", "AK_water", dom, .theme)
-  callModule(compositeMod, "CAN", "CAN", dom, .theme)
-  callModule(compositeMod, "AKCAN", "AKCAN", dom, .theme)
-  callModule(compositeMod, "6090N", "6090N", dom, .theme)
-  callModule(compositeMod, "2090N", "2090N", dom, .theme)
-  callModule(compositeMod, "low48", "low48", dom, .theme)
-  callModule(compositeMod, "pacif", "pacif", dom, .theme)
+  map(domains, ~callModule(compositeMod, paste0("sb", .x), .x, dom, .theme))
+  map(domains, ~callModule(compositeMod, .x, .x, dom, .theme, info=gcm_inclusion))
 })
