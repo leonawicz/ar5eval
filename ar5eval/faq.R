@@ -5,14 +5,17 @@ bsCollapse(id="faq",
       For this work, the GCMs provide different projections of future climate that are used to inform projections of future fire activity.
       If you are interested in exploring the range of burned area with these GCMs,
       the GFDL-CM3 and NCAR-CCSM4 models tend to correspond to the projections with the most area burned
-      and the MRI-CGCM3 tends to have the least area burned. For more information, please see the following link."),
+      and the MRI-CGCM3 tends to have the least area burned. For more information, please see the following link.", style="text-align: justify;"),
     a("Intergovernmental Panel on Climate Change GCM guide",
       href="http://www.ipcc-data.org/guidelines/pages/gcm_guide.html", target="_blank"),
     style="info"),
   bsCollapsePanel("What is ERA-40?",
-    p("Add text here, include link..."), 
+    p("Add text here, include link...", style="text-align: justify;"), 
       style="info"),
+  bsCollapsePanel("Why are composite GCMs not always ordered by lowest error?",
+    gcm_inclusion,
+    style="info"),
   bsCollapsePanel("What is...?", 
-    p("Blah blah..."),
+    p("Blah blah...", style="text-align: justify;"),
     style="info")
 )
