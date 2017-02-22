@@ -43,15 +43,12 @@ dashboardPage(
                  class="btn-flat action-button btn-block", icon=icon("question-circle"))
   ),
   dashboardBody(
-    #includeCSS("www/styles.css"),
-    bsModal("staticmap", "AR5 GCM evalutation spatial domains", "btn_staticmap", size="large",
-            img(src='domain_map.png', align="center", style="width: 100%")
-    ),
+    includeCSS("www/styles.css"),
     tabItems(
       tabItem(tabName="overview",
         fluidRow(
           column(9, h4("Variable selection")),
-          column(3, actionButton("btn_staticmap", "Domain map", class="btn-block", icon("globe")))
+          column(3, actionButton("staticmap", "Domain map", class="btn-block", icon("globe")))
         ),
         fluidRow(
           column(3, selectInput("stat", "Error statistic", err_stats, "RMSE", multiple=TRUE, width="100%")),
