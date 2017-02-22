@@ -1,4 +1,5 @@
 library(shiny)
+library(shinyBS)
 library(shinydashboard)
 library(rintrojs)
 d <- readRDS("data/stats.rds")
