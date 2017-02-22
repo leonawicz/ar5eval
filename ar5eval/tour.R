@@ -37,7 +37,7 @@ tour.text <- c(
   "04"="Evaluation of GCMs is done for each of three climate variables, precipitation, sea level pressure and temperature,
   as well as an integration of all three by combining after standardizing the variables.",
   "05"="Nine spatial domains are used for the analysis, which focuses on Alaska but spreads out to reach Canada, the pan-Arctic, 
-  the lower 48 states, and other lower northern lattitudes including a Pacific islands region.",
+  the lower 48 states, and other lower lattitudes including a Pacific islands region.",
   "06"="Estimated error using each error statistic, climate variable, and spatial domain is calculated monthly.
   While GCMs can be ranked based on monthly or seasonal performance, mean annual estimated error is typically used to rank the GCMs.",
   "07"="The first step in the model evaluation involves a spatial bootstrap resampling on each geographic domain to estimate
