@@ -20,14 +20,14 @@ gcmPlot <- function(x, var, type, size=1){
   }
   
   x <- group_by(x, Composite, Group) %>% 
-    summarise(LB=quantile(Val, 0.025), p05=quantile(Val, 0.05), Mean=mean(Val), UB=quantile(Val, 0.975))
+    summarise(LB=min(Val), p05=quantile(Val, 0.05), Mean=mean(Val), UB=max(Val))
   g <- ggplot(x, aes(Composite, Mean, colour=Group, group=Group)) + 
     geom_ribbon(data=filter(x, Group=="Random"), aes(ymin=LB, ymax=UB), alpha=0.3, colour="white") +
     geom_line(data=filter(x, Group=="Random"), size=1) +
     #geom_line(data=filter(x, Group=="Random"), aes(y=p05), size=1) +
     geom_line(data=filter(x, Group=="Selected"), size=1) +
     geom_line(data=filter(x, Group=="Individual"), size=1) +
-    labs(title="Estimated error", subtitle="by composite GCM size",
+    labs(title="Estimated error", subtitle=expression(italic("by composite GCM size")),
          x="Number of GCMs in composite", y=prime.lab) +
     scale_colour_manual(values=c("orange", "black", "royalblue"))
   g
