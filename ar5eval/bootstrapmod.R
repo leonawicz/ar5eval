@@ -8,11 +8,18 @@ spbootModUI <- function(id){
           c("RMSE", "RMSE (bias removed)"="RMSE0", "MAE", "MAE (bias removed)"="MAE0"), width="100%")
       )
     ),
-    fluidRow(
-      box(title="Mean annual integrated climate variable estimated GCM error distributions", 
-          plotOutput(ns("distPlot"), height=600), status="primary", width=7),
-      box(title="Monthly estimated mean GCM error heat map", 
-          plotOutput(ns("hmap_gcms"), height=600), status="primary", width=5)
+    div(id="plot-container",
+      fluidRow(
+        box(title="Mean annual integrated climate variable estimated GCM error distributions", 
+            plotOutput(ns("distPlot"), height=600), status="primary", width=7),
+        box(title="Monthly estimated mean GCM error heat map", 
+            plotOutput(ns("hmap_gcms"), height=600), status="primary", width=5)
+      ),
+      conditionalPanel(
+        sprintf("output['%s'] == null", ns("distPlot")), 
+        h4("Loading data", style="position: absolute; left: 0; top: 40%; right: 0; text-align: center;"),
+        tags$img(src="spinner.gif", id="loading-spinner")
+      )
     ),
     fluidRow(
       box(
