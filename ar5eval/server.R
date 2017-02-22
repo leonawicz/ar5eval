@@ -13,11 +13,19 @@ library(ggplot2)
 
 shinyServer(function(input, output, session) {
   
+  source("tour.R", local=TRUE) # introjs tour
+  
   dsub <- reactive({ 
-    filter(d, Domain %in% input$spdom & Stat %in% input$stat & Var %in% input$vars & Period %in% input$time) %>%
+    x <- filter(d, Domain %in% input$spdom & Stat %in% input$stat & 
+                  Var %in% input$vars & Period %in% input$time) %>%
           group_by(Domain, Stat, Var) %>% filter(rank(Mean_Rank) <= input$n_gcms) %>% ungroup
+    if(input$order=="mean") 
+      x <- mutate(x, GCM=factor(GCM, levels=GCM[order(Mean_Rank)]))
+    x
   })
+  
   clrby <- reactive({ if(input$clrby=="") NULL else input$clrby })
+  
   period <- reactive({ 
     if(input$time=="Annual") "mean annual" else month.name[match(input$time, month.abb)] 
   })

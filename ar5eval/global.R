@@ -1,5 +1,6 @@
 library(shiny)
 library(shinydashboard)
+library(rintrojs)
 d <- readRDS("data/stats.rds")
 source("functions.R")
 source("bootstrapmod.R")
@@ -10,3 +11,4 @@ domains <- c("Alaska"="AK", "Alaska (land)"="AK_land", "Alaska (ocean)"="AK_wate
 err_stats <- c("RMSE", "RMSE (bias removed)"="RMSE0", "MAE", "MAE (bias removed)"="MAE0")
 variables <- c("Integrated"="integrated", "Temperature"="tas", "Precipitation"="pr", "Sea level pressure"="psl")
 grp_vars <- c("", "Spatial domain"="Domain", "Error statistic"="Stat", "Climate variable"="Var")
+gcm_order <- c("Fixed (alphabetical)"="fixed", "Reorder each data set (mean rank)"="mean")

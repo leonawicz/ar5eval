@@ -5,16 +5,16 @@ dashboardPage(
     title="AR5 GCM Evaluation",
     tags$li(class="dropdown",
             tags$a(href="http://snap.uaf.edu", target="_blank",
-                   tags$img(src="SNAP_acronym_100px.png", width="100%", alt="SNAP"), style="margin: 10px; padding: 0px;")
+                   tags$img(src="SNAP_acronym_100px.png", width="100%", alt="SNAP"), style="padding: 10px; margin: 0px;")
     )
     #tags$head(includeScript("ga-nwtapp.js"), includeScript("ga-allapps.js")),
   ),
   dashboardSidebar(
     #useToastr(),
-    #introjsUI(),
+    introjsUI(),
     sidebarMenu(
       id="tabs",
-      menuItem("Spatial bootstrap", icon=icon("sliders"),
+      menuItem("Spatial bootstrap", icon=icon("bar-chart"),
         menuSubItem("Overview", tabName="overview"),
         menuSubItem("Alaska", tabName="sbAK"),
         menuSubItem("Alaska (land)", tabName="sbAK_land"),
@@ -26,7 +26,7 @@ dashboardPage(
         menuSubItem("Lower 48 states", tabName="sblow48"),
         menuSubItem("Pacific islands", tabName="sbpacif")
       ),
-      menuItem("Sequential ensembles", icon=icon("fire", lib="glyphicon"),
+      menuItem("Sequential ensembles", icon=icon("signal"),
         menuSubItem("Alaska", tabName="AK"),
         menuSubItem("Alaska (land)", tabName="AK_land"),
         menuSubItem("Alaska (ocean)", tabName="AK_water"),
@@ -38,7 +38,9 @@ dashboardPage(
         menuSubItem("Pacific islands", tabName="pacif")
       ),
       menuItem("Information", icon=icon("info-circle"), tabName="info")
-    )
+    ),
+    actionButton("help", "Take tour", style="margin: 10px 15px 10px 15px; width: 200px",
+                 class="btn-flat action-button btn-block", icon=icon("question-circle"))
   ),
   dashboardBody(
     #includeCSS("www/styles.css"),
@@ -55,14 +57,15 @@ dashboardPage(
           column(3, selectInput("time", "Time", c("Annual", month.abb), "Annual", width="100%"))
         ),
         fluidRow(box(title="", status="primary", width=12, height=0)),
+        fluidRow(column(12, h4("GCM rankings and selection probability"))),
+        fluidRow(column(12, plotOutput("rankPlot", height=275))),
+        fluidRow(column(12, plotOutput("top5Plot"))),
         fluidRow(
-          column(3, h4("GCM rankings and selection probability")),
           column(3, selectInput("clrby", "Color by", grp_vars, width="100%")),
           column(3, selectInput("fctby", "Facet by", grp_vars, width="100%")),
+          column(3, selectInput("order", "GCM plot order", gcm_order, width="100%")),
           column(3, sliderInput("n_gcms", "Number of GCMs shown", 1, 21, 21, 1, width="100%"))
-        ),
-        fluidRow(column(12, plotOutput("rankPlot", height=275))),
-        fluidRow(column(12, plotOutput("top5Plot")))
+        )
       ),
       spbootModUI(id="sbAK"),
       spbootModUI(id="sbAK_land"),
