@@ -68,6 +68,6 @@ shinyServer(function(input, output, session) {
   })
   
   dom <- reactive(input$tabs)
-  map(domains, ~callModule(compositeMod, paste0("sb", .x), .x, dom, .theme))
+  map(domains, ~callModule(spbootMod, paste0("sb", .x), .x, dom, .theme))
   map(domains, ~callModule(compositeMod, .x, .x, dom, .theme, info=gcm_inclusion))
 })
