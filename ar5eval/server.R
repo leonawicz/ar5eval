@@ -19,7 +19,7 @@ shinyServer(function(input, output, session) {
     showModal(modalDialog(
       title="AR5 GCM evalutation spatial domains",
       img(src='domain_map.png', align="center", style="width: 100%"),
-      size="m", easyClose=TRUE, footer=NULL
+      size="l", easyClose=TRUE, footer=NULL
       ))
   })
   
