@@ -33,11 +33,13 @@ combo <- function(size, n){
 # each time with return.data=FALSE
 gcmEval <- function(i, gcmDir, baseDir, surface.mask, bbox, gcms=list.files(gcmDir), n=1, 
                     vars=c("pr", "psl", "tas"), type="all", land=1, water=0,
-                    composite=FALSE, composite.size=NULL, exact=TRUE, data=NULL, return.data=FALSE){
+                    composite=FALSE, composite.size=NULL, exact=TRUE, data=NULL, return.data=FALSE, 
+                    all.vars=c("integrated", "pr", "psl", "tas")){
   doms <- names(bbox); id <- doms[i]; bbox <- bbox[[i]]; type <- type[i]
   cells <- cellsFromExtent(surface.mask, bbox)
   if(type=="land") cells <- cells[which(surface.mask[cells]==land)]
   if(type=="water") cells <- cells[which(surface.mask[cells]==water)]
+  vars <- c("pr", "psl", "tas")
   base <- map(vars, ~extract(stack(list.files(baseDir, pattern=.x, full=T)), cells))
   files.gcm <- map(vars, ~list.files(file.path(gcmDir, gcms), pattern=.x, full=T)
                    %>% split(basename(dirname(.))))
@@ -126,7 +128,7 @@ gcmEval <- function(i, gcmDir, baseDir, surface.mask, bbox, gcms=list.files(gcmD
   }
   
   d <- bind_rows(d) %>% 
-    mutate(Domain=factor(id, levels=doms), Var=factor(Var, levels=c("integrated", vars)))
+    mutate(Domain=factor(id, levels=doms), Var=factor(Var, levels=all.vars))
   if(exact & composite){
     d <- select(d, Domain, Var, Stat, Month, Sample, GCM, Composite, Group, Val) %>%
       mutate(Group=factor(Group, levels=c("Random", "Selected", "Individual"))) %>%
