@@ -6,10 +6,10 @@ dashboardPage(
     tags$li(class="dropdown",
             tags$a(href="http://snap.uaf.edu", target="_blank",
                    tags$img(src="SNAP_acronym_100px.png", width="100%", alt="SNAP"), style="padding: 10px; margin: 0px;")
-    ),
-    tags$head(includeScript("ga-ar5eval.js"), includeScript("ga-allapps.js"))
+    )
   ),
   dashboardSidebar(
+    tags$head(includeScript("ga-ar5eval.js"), includeScript("ga-allapps.js")),
     #useToastr(),
     introjsUI(),
     sidebarMenu(
