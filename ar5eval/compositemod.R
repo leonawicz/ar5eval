@@ -38,7 +38,9 @@ compositeModUI <- function(id){
         tabPanel("Monthly error maps", 
           div(id="plot-container",
             fluidRow(
-             box(title="Sequential selected GCMs", plotOutput(ns("hmap_sel"), height=600), status="primary", width=6),
+             box(title="Sequential selected GCMs", 
+                 plotOutput(ns("hmap_sel"), height=600),
+                 checkboxInput(ns("gcm_labels"), "Use GCM labels by composite order", FALSE), status="primary", width=6),
              box(title="Random ensembles of opportunity", plotOutput(ns("hmap_ran"), height=600), status="primary", width=6)
             ),
             conditionalPanel(
@@ -85,9 +87,11 @@ compositeMod <- function(input, output, session, dom0, dom, .theme, ...){
   
   output$hmap_sel <- renderPlot({
     req(d())
+    gcmlab <- if(input$gcm_labels) slice(filter(d()$re, Var==input$var), 1:21)$GCM else NULL
     gcmHeatmap(filter(d()$sb.hm1, Var==input$var & Group=="Selected"), "Month", "Composite",
                lab="Val", lab.rnd=lab_rnd(), 
-               title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="Number of GCMs in composite") +
+               title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="Number of GCMs in composite",
+               gcm_labels=gcmlab) +
       .theme + geom_hline(yintercept=21 - c(4.5, 5.5) + 1, linetype=2)
   })
   output$hmap_ran <- renderPlot({

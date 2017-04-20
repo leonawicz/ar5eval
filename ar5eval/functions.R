@@ -34,21 +34,26 @@ gcmPlot <- function(x, var, type, size=1){
 }
 
 gcmHeatmap <- function(data, x, y, fill="Val", lab=NULL, lab.rnd=2,
-                       title="", subtitle="", xlb="", ylb="", legend.title="Estimated error"){
+  title="", subtitle="", xlb="", ylb="", gcm_labels=NULL, legend.title="Estimated error"){
   clrs <- switch(as.character(data$Var[1]), 
                  integrated=c("white", "chocolate4"), 
                  pr=c("white", "lightgreen", "darkgreen"), 
                  psl=c("white", "lightblue", "dodgerblue", "blue"), 
                  tas=c("white", "salmon", "red"))
-  if("Composite" %in% c(x, y)) 
+  if(!is.null(gcm_labels)) ylb <- "GCM composite order (top to bottom)"
+  if("Composite" %in% c(x, y)){
     data <- mutate(data, Composite=factor(Composite, levels=21:1))
+    if(is.null(gcm_labels)) gcm_labels <- 1:21
+  }
   g <- ggplot(data, aes_string(x, y)) + geom_tile(aes_string(fill=fill))
   if(!is.null(lab)){
     lab <- paste0("round(", lab, ", ", lab.rnd, ")")
     g <- g + geom_text(aes_string(label=lab))
   }
+  yscale <- if(is.null(gcm_labels)) scale_y_discrete(position="left") else 
+    scale_y_discrete(position="left", labels=rev(gcm_labels))
   g + scale_fill_gradientn(colours=clrs) +
     labs(title=title, subtitle=subtitle, x=xlb, y=ylb) +
-    scale_y_discrete(position="right") + scale_x_discrete(expand=c(0,0)) +
+    yscale + scale_x_discrete(expand=c(0,0)) +
     guides(fill=guide_legend(title=legend.title))
 }
