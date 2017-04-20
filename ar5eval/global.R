@@ -17,7 +17,7 @@ grp_vars <- c("", "Spatial domain"="Domain", "Error statistic"="Stat", "Climate 
 gcm_order <- c("Fixed (alphabetical)"="fixed", "Reorder each data set (mean rank)"="mean")
 
 gcm_inclusion <- tagList(
-  p("The order in which GCMs are including in composite models of increasing of size uses individual GCM rankings.
+  p("Individual GCM rankings determine the order in which GCMs are included in composite models of increasing of size.
     Rank is based on mean annual estimated error for the selected climate variable over the selected
     spatial domain using the selected error statistic.", style="text-align: justify;")
 )
