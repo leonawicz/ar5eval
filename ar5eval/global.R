@@ -2,8 +2,12 @@ library(shiny)
 library(shinyBS)
 library(shinydashboard)
 library(rintrojs)
+library(aws.s3)
 
-d <- readRDS("data/stats.rds")
+d <- readRDS("data/stats.rds") # load any default local data sets
+dataloc <- "s3://mleonawicz/apps/ar5eval" # specify location for any external data sets
+datasrc <- if(substr(dataloc, 1, 5)=="s3://") "aws" else "local" # Amazon Web Services or local data files
+source("aws_key.R") # authentication to AWS
 source("functions.R")
 source("bootstrapmod.R")
 source("compositemod.R")

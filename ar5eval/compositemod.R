@@ -66,10 +66,8 @@ compositeMod <- function(input, output, session, dom0, dom, .theme, ...){
     ))
   })
   
-  d <- reactive({ 
-    if(dom()==dom0) readRDS(paste0("data/", stat(), "_", dom(), ".rds")) else NULL
-  })
-
+  rdsfile <- reactive({ if(dom()==dom0) paste0(dataloc, "/", stat(), "_", dom(), ".rds") else NULL })
+  source("data.R", local=TRUE)
   
   hm_title <- "Estimated monthly error: composites of lowest-error GCMs"
   hm_title2 <- "Estimated monthly error: random ensembles"
@@ -86,29 +84,29 @@ compositeMod <- function(input, output, session, dom0, dom, .theme, ...){
   })
   
   output$hmap_sel <- renderPlot({
-    req(d())
-    gcmlab <- if(input$gcm_labels) slice(filter(d()$re, Var==input$var), 1:21)$GCM else NULL
-    gcmHeatmap(filter(d()$sb.hm1, Var==input$var & Group=="Selected"), "Month", "Composite",
+    req(rv$d)
+    gcmlab <- if(input$gcm_labels) slice(filter(rv$d$re, Var==input$var), 1:21)$GCM else NULL
+    gcmHeatmap(filter(rv$d$sb.hm1, Var==input$var & Group=="Selected"), "Month", "Composite",
                lab="Val", lab.rnd=lab_rnd(), 
                title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="Number of GCMs in composite",
                gcm_labels=gcmlab) +
       .theme + geom_hline(yintercept=21 - c(4.5, 5.5) + 1, linetype=2)
   })
   output$hmap_ran <- renderPlot({
-    req(d())
-    gcmHeatmap(filter(d()$sb.hm1, Var==input$var & Group=="Random"), "Month", "Composite",
+    req(rv$d)
+    gcmHeatmap(filter(rv$d$sb.hm1, Var==input$var & Group=="Random"), "Month", "Composite",
                lab="Val", lab.rnd=lab_rnd(), 
                title=hm_title2, subtitle=hm_subtitle(), xlb="Month", ylb="Number of GCMs in composite") +
       .theme + geom_hline(yintercept=21 - c(4.5, 5.5) + 1, linetype=2)
   })
   
   output$perm_one <- renderPlot({
-    req(d())
-    gcmPlot(d()$re, input$var, "histogram", size=input$size) + .theme
+    req(rv$d)
+    gcmPlot(rv$d$re, input$var, "histogram", size=input$size) + .theme
   })
   output$perm_all <- renderPlot({
-    req(d())
-    gcmPlot(d()$re, input$var, "line") + .theme + scale_x_continuous(breaks=1:21) +
+    req(rv$d)
+    gcmPlot(rv$d$re, input$var, "line") + .theme + scale_x_continuous(breaks=1:21) +
       geom_vline(xintercept=input$size, size=1, linetype=2)
   })
 }

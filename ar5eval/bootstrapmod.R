@@ -50,10 +50,11 @@ spbootMod <- function(input, output, session, dom0, dom, .theme){
   ns <- session$ns
   
   stat <- reactive(input$stat)
-  d <- reactive({ 
+  rdsfile <- reactive({ 
     dom2 <- if(substr(dom(), 1, 2)=="sb") substring(dom(), 3) else dom()
-    if(dom2==dom0) readRDS(paste0("data/", stat(), "_", dom2, ".rds")) else NULL
+    if(dom2==dom0) paste0(dataloc, "/", stat(), "_", dom2, ".rds") else NULL
   })
+  source("data.R", local=TRUE)
   
   stat.lab <- reactive({ 
     x <- switch(stat(), 
@@ -62,22 +63,27 @@ spbootMod <- function(input, output, session, dom0, dom, .theme){
     if(input$vals=="Estimated error") x else "performance rankings"
   })
   
-  output$distPlot <- renderPlot({
-    req(d())
-    xlb <- if(stat.lab()=="performance rankings") "GCM performance rank" else stat.lab()
-    top5 <- unique((filter(d()$re, Composite <= 5 & Group=="Individual")$GCM))
-    below5 <- unique((filter(d()$re, Composite > 5)$GCM))
-    d5 <- filter(d()$samples, GCM %in% top5)
-    dx <- filter(d()$samples, GCM %in% below5)
-    g <- ggplot(d5, aes_string(input$vals, colour="GCM", fill="GCM", group="GCM")) + 
-      geom_density(data=dx, size=1, colour="gray30", fill="gray30", alpha=0.3) + 
-      geom_density(size=1, alpha=0.3) + 
-      labs(title=paste0("Sampling distributions of ", stat.lab(), " by GCM"), 
-           subtitle=expression(italic("based on spatial bootstrap resampling")),
-           x=xlb, y="Density") +
-      .theme
-    g
+  distPlot <- reactive({
+    input$vals
+    stat.lab()
+    isolate({
+      req(rv$d)
+      xlb <- if(stat.lab()=="performance rankings") "GCM performance rank" else stat.lab()
+      top5 <- unique((filter(rv$d$re, Composite <= 5 & Group=="Individual")$GCM))
+      below5 <- unique((filter(rv$d$re, Composite > 5)$GCM))
+      d5 <- filter(rv$d$samples, GCM %in% top5)
+      dx <- filter(rv$d$samples, GCM %in% below5)
+      g <- ggplot(d5, aes_string(input$vals, colour="GCM", fill="GCM", group="GCM")) + 
+        geom_density(data=dx, size=1, colour="gray30", fill="gray30", alpha=0.3) + 
+        geom_density(size=1, alpha=0.3) + 
+        labs(title=paste0("Sampling distributions of ", stat.lab(), " by GCM"), 
+             subtitle=expression(italic("based on spatial bootstrap resampling")),
+             x=xlb, y="Density") +
+        .theme
+      g
+    })
   })
+  output$distPlot <- renderPlot({ distPlot() })
   
   lab <- reactive({
     if(is.null(input$overlay) || input$overlay=="") return()
@@ -97,19 +103,19 @@ spbootMod <- function(input, output, session, dom0, dom, .theme){
     if(input$overlay=="Val") 
       x <- switch(input$var, "integrated"=1, "pr"=0, "psl"=0, "tas"=1)
     if(input$overlay=="PropTop5") x <- 2
-    if(input$overlay=="Mean_Rank") x <- 0
+    if(input$overlay=="Mean_Rank") x <- 1
     x
   })
   
   output$hmap_gcms <- renderPlot({
-    req(d())
+    req(rv$d)
     if(input$overlay %in% c("", "Val")){
-      gcmHeatmap(filter(d()$sb.hm1, Var==input$var & Group=="Individual"), "Month", "GCM", 
+      gcmHeatmap(filter(rv$d$sb.hm1, Var==input$var & Group=="Individual"), "Month", "GCM", 
         lab=lab(), lab.rnd=lab_rnd(), 
         title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="GCM") +
         .theme
     } else {
-      gcmHeatmap(filter(d()$sb.hm2, Var==input$var), "Month", "GCM", 
+      gcmHeatmap(filter(rv$d$sb.hm2, Var==input$var), "Month", "GCM", 
         lab=lab(), lab.rnd=lab_rnd(),
         title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="GCM") +
         .theme
