@@ -60,13 +60,13 @@ tour.text <- c(
   "14"="The number of GCMs displayed can be reduced. Displaying fewer GCMs removes the worst perfoming GCMs from the plots.
   This is helpful when coloring and/or faceting by the variables above 
   since coloring and faceting have the ability to significant crowd the visualiztion.",
-  "15"="Next we will look at results pertaining specicically to Alaska. After pressing 'Next' you will leave this overview tab
-  and be taken to the Alaska tab as the next part of the tour.
+  "15"="Next we will look at results pertaining specifically to Alaska. After pressing 'Next' you will leave this overview tab
+  and be taken to the Alaska tab for the next part of the tour.
   Outside of this tour you can freely explore the menu tree in the sidebar. For now, let's jump to the Alaska results.",
   
   "16"="Continuing with the first stage of the GCM evaluation, which compares performance of individual GCMs,
   now we look more closely at domain-specific results using the Alaska spatial domain as an example.",
-  "17"="Compared to the general overview tab, there is only choice of error metric available.
+  "17"="Compared to the general overview tab, only the error metric option is available.
   Other choices are simplifed or not applicable.",
   "18"= "Example sampling distributions of mean annual estimated error are shown.
   The top five GCMs based on sampling distribution means are colored and lower-performing models remain gray.
