@@ -6,11 +6,12 @@ spbootModUI <- function(id){
       column(3,
         selectInput(ns("stat"), "Error statistic", 
           c("RMSE", "RMSE (bias removed)"="RMSE0", "MAE", "MAE (bias removed)"="MAE0"), width="100%")
-      )
+      )#, # use later when samples available for each variable, see ditribution plot below
+      #column(3, selectInput(ns("var"), "Climate variable", variables, "integrated", width="100%"))
     ),
     div(id="plot-container",
       fluidRow(
-        box(title="Mean annual integrated climate variable estimated GCM error distributions", 
+        box(title="Mean annual estimated GCM error distributions", 
             plotOutput(ns("distPlot"), height=600), status="primary", width=7),
         box(title="Monthly estimated mean GCM error heat map", 
             plotOutput(ns("hmap_gcms"), height=600), status="primary", width=5)
@@ -36,7 +37,7 @@ spbootModUI <- function(id){
             selectInput(ns("var"), "Climate variable", 
               c("Integrated"="integrated", "Temperature"="tas", "Precipitation"="pr", "Sea level pressure"="psl"), "integrated", width="100%")
           ),
-          column(6, 
+          column(6,
             selectInput(ns("overlay"), "Cell overlay stats", 
               c("", "Raw error values"="Val", "Probability in top 5"="PropTop5", "Mean rank"="Mean_Rank"), width="100%")
           )
@@ -60,24 +61,29 @@ spbootMod <- function(input, output, session, dom0, dom, .theme){
     x <- switch(stat(), 
            "RMSE"="RMSE", "RMSE0"="RMSE (biased removed)", 
            "MAE"="MAE", "MAE0"="MAE (bias removed)")
-    if(input$vals=="Estimated error") x else "performance rankings"
+    if(input$vals=="Val") x else "performance rankings"
   })
   
   distPlot <- reactive({
     input$vals
+    input$var
     stat.lab()
     isolate({
       req(rv$d)
       xlb <- if(stat.lab()=="performance rankings") "GCM performance rank" else stat.lab()
-      top5 <- unique((filter(rv$d$re, Composite <= 5 & Group=="Individual")$GCM))
-      below5 <- unique((filter(rv$d$re, Composite > 5)$GCM))
+      top5 <- unique((filter(rv$d$re, Composite <= 5 & Group=="Individual" & Var=="integrated")$GCM)) # temporary
+      below5 <- unique((filter(rv$d$re, Composite > 5 & Group=="Individual" & Var=="integrated")$GCM))
+      # use later when samples available for each variable:
+      #top5 <- unique((filter(rv$d$re, Composite <= 5 & Group=="Individual" & Var==input$var)$GCM))
+      #below5 <- unique((filter(rv$d$re, Composite > 5 & Group=="Individual" & Var==input$var)$GCM))
       d5 <- filter(rv$d$samples, GCM %in% top5)
       dx <- filter(rv$d$samples, GCM %in% below5)
       g <- ggplot(d5, aes_string(input$vals, colour="GCM", fill="GCM", group="GCM")) + 
         geom_density(data=dx, size=1, colour="gray30", fill="gray30", alpha=0.3) + 
         geom_density(size=1, alpha=0.3) + 
-        labs(title=paste0("Sampling distributions of ", stat.lab(), " by GCM"), 
-             subtitle=expression(italic("based on spatial bootstrap resampling")),
+        # temporary hardcoded "integrated variable" only
+        labs(title=paste(xlb, "sampling distributions by GCM"),
+             subtitle=expression(italic("Integrated variable, based on spatial bootstrap resampling")),
              x=xlb, y="Density") +
         .theme
       g
@@ -93,7 +99,7 @@ spbootMod <- function(input, output, session, dom0, dom, .theme){
   hm_title <- "Estimated monthly error by GCM"
   hm_subtitle <- reactive({
     switch(input$var,
-      "integrated"=expression(italic("Integrated variables are standardized to unitless error metric")),
+      "integrated"=expression(italic("Integrated variables are normalized")),
       "pr"=expression(italic("Estimated precipitation error is in mm")),
       "psl"=expression(italic("Estimated sea level pressure error is in kPa")),
       "tas"=expression(italic("Estimated temperature error is in"~degree~C))
