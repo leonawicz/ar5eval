@@ -1,6 +1,8 @@
 library(dplyr)
 library(purrr)
 library(ggplot2)
+library(aws.s3)
+source("ar5eval/aws_key.R") # authentication to AWS
 
 source("functions.R")
 d <- readRDS("data/bootstrap_error.rds") %>% integrateVars
@@ -27,7 +29,7 @@ getSamples <- function(d, domain, stat){
   filter(Domain==domain & Stat==stat)
 }
 
-prepAppData <- function(data, domain, stat, monthly){
+prepAppData <- function(data, domain, stat, monthly, local=TRUE){
   samples <- getSamples(data, domain, stat)
   vars=c("integrated", "pr", "psl", "tas")
   
@@ -51,14 +53,17 @@ prepAppData <- function(data, domain, stat, monthly){
     select(-Domain, -Stat, -Sample) %>% ungroup %>% mutate(Var=factor(Var, levels=vars)) %>%
     filter_(.dots=paste0("Var=='", vars[i], "'"))
   
-  monthly.tmp <- filter(monthly, Domain==domain & Stat==stat & Var==vars[i])
-  d.sp2[[i]] <- joinStats(d.sp[[i]], monthly.tmp, vars[i]) #%>% bind_rows %>% ungroup %>% mutate(Var=factor(Var, levels=vars))
+  monthly.tmp <   - filter(monthly, Domain==domain & Stat==stat & Var==vars[i])
+  d.sp2[[i]] <- joinStats(d.sp[[i]], monthly.tmp, vars[i])
   }
   d.re <- bind_rows(d.re)
   d.sp <- bind_rows(d.sp)
-  d.sp2 <- bind_rows(d.sp2)
+  d.sp2 <- bind_rows(d.sp2) %>% mutate(Var=factor(Var, levels=vars))
   data <- list(samples=samples, sb.hm1=d.sp, sb.hm2=d.sp2, re=d.re)
-  saveRDS(data, file=paste0("ar5eval/data/", stat, "_", domain, ".rds"))
+  file <- paste0(stat, "_", domain, ".rds")
+  if(local) saveRDS(data, file=paste0("ar5eval/data/", file))
+  if(!local) s3saveRDS(data, object=paste0("s3://mleonawicz/apps/ar5eval/", file))
+  cat(paste(file, "saved\n"))
 }
 
-walk2(rep(levels(d$Domain), 4), rep(levels(d$Stat), each=9), ~prepAppData(d, .x, .y, stats.mon))
+walk2(rep(levels(d$Domain), 4), rep(levels(d$Stat), each=9), ~prepAppData(d, .x, .y, stats.mon, local=FALSE))
