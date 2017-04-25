@@ -6,8 +6,8 @@ spbootModUI <- function(id){
       column(3,
         selectInput(ns("stat"), "Error statistic", 
           c("RMSE", "RMSE (bias removed)"="RMSE0", "MAE", "MAE (bias removed)"="MAE0"), width="100%")
-      )#, # use later when samples available for each variable, see ditribution plot below
-      #column(3, selectInput(ns("var"), "Climate variable", variables, "integrated", width="100%"))
+      ),
+      column(3, selectInput(ns("var"), "Climate variable", variables, "integrated", width="100%"))
     ),
     div(id="plot-container",
       fluidRow(
@@ -33,10 +33,6 @@ spbootModUI <- function(id){
       ),
       box(
         fluidRow(
-          column(6,
-            selectInput(ns("var"), "Climate variable", 
-              c("Integrated"="integrated", "Temperature"="tas", "Precipitation"="pr", "Sea level pressure"="psl"), "integrated", width="100%")
-          ),
           column(6,
             selectInput(ns("overlay"), "Cell overlay stats", 
               c("", "Raw error values"="Val", "Probability in top 5"="PropTop5", "Mean rank"="Mean_Rank"), width="100%")
@@ -70,20 +66,22 @@ spbootMod <- function(input, output, session, dom0, dom, .theme){
     stat.lab()
     isolate({
       req(rv$d)
-      xlb <- if(stat.lab()=="performance rankings") "GCM performance rank" else stat.lab()
-      top5 <- unique((filter(rv$d$re, Composite <= 5 & Group=="Individual" & Var=="integrated")$GCM)) # temporary
-      below5 <- unique((filter(rv$d$re, Composite > 5 & Group=="Individual" & Var=="integrated")$GCM))
-      # use later when samples available for each variable:
-      #top5 <- unique((filter(rv$d$re, Composite <= 5 & Group=="Individual" & Var==input$var)$GCM))
-      #below5 <- unique((filter(rv$d$re, Composite > 5 & Group=="Individual" & Var==input$var)$GCM))
-      d5 <- filter(rv$d$samples, GCM %in% top5)
-      dx <- filter(rv$d$samples, GCM %in% below5)
+      varname <- switch(input$var, 
+        "integrated"="Integrated", "tas"="Temperature", "pr"="Precipitation", "psl"="Sea level pressure")
+      x <- filter(rv$d$re, Group=="Individual" & Var==input$var)
+      y <- filter(rv$d$samples, Var==input$var)
+      ranks <- stat.lab()=="performance rankings"
+      xlb <- if(ranks) "GCM performance rank" else stat.lab()
+      main <- if(ranks) paste(varname, xlb) else paste(varname, xlb, "by GCM")
+      top5 <- unique((filter(x, Composite <= 5)$GCM))
+      below5 <- unique((filter(x, Composite > 5)$GCM))
+      d5 <- filter(y, GCM %in% top5)
+      dx <- filter(y, GCM %in% below5)
       g <- ggplot(d5, aes_string(input$vals, colour="GCM", fill="GCM", group="GCM")) + 
         geom_density(data=dx, size=1, colour="gray30", fill="gray30", alpha=0.3) + 
         geom_density(size=1, alpha=0.3) + 
         # temporary hardcoded "integrated variable" only
-        labs(title=paste(xlb, "sampling distributions by GCM"),
-             subtitle=expression(italic("Integrated variable, based on spatial bootstrap resampling")),
+        labs(title=main, subtitle=expression(italic("Sampling distributions based on spatial bootstrap")),
              x=xlb, y="Density") +
         .theme
       g
@@ -116,13 +114,15 @@ spbootMod <- function(input, output, session, dom0, dom, .theme){
   output$hmap_gcms <- renderPlot({
     req(rv$d)
     if(input$overlay %in% c("", "Val")){
-      gcmHeatmap(filter(rv$d$sb.hm1, Var==input$var & Group=="Individual"), "Month", "GCM", 
-        lab=lab(), lab.rnd=lab_rnd(), 
+      x <- filter(rv$d$sb.hm1, Var==input$var & Group=="Individual") %>% 
+        mutate(GCM=factor(GCM, levels=rev(unique(GCM))))
+      gcmHeatmap(x, "Month", "GCM", lab=lab(), lab.rnd=lab_rnd(), 
         title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="GCM") +
         .theme
     } else {
-      gcmHeatmap(filter(rv$d$sb.hm2, Var==input$var), "Month", "GCM", 
-        lab=lab(), lab.rnd=lab_rnd(),
+      x <- filter(rv$d$sb.hm2, Var==input$var) %>% 
+        mutate(GCM=factor(GCM, levels=rev(unique(GCM))))
+      gcmHeatmap(x, "Month", "GCM", lab=lab(), lab.rnd=lab_rnd(),
         title=hm_title, subtitle=hm_subtitle(), xlb="Month", ylb="GCM") +
         .theme
     }
