@@ -24,15 +24,13 @@ stats <- bind_rows(
 saveRDS(stats, file="ar5eval/data/stats.rds")
 
 getSamples <- function(d, domain, stat){
-  d %>% group_by(Domain, Var, Stat, Sample) %>% mutate(Val=(Val-mean(Val))/sd(Val)) %>%
-  group_by(Domain, Stat, Sample, GCM) %>% summarise(Val=mean(Val)) %>% mutate(Rank=rank(Val)) %>% 
-  filter(Domain==domain & Stat==stat)
+  filter(d, Domain==domain & Stat==stat) %>% group_by(Domain, Stat, Var, Sample, GCM) %>% 
+    summarise(Val=mean(Val)) %>% mutate(Rank=rank(Val))
 }
 
 prepAppData <- function(data, domain, stat, monthly, local=TRUE){
   samples <- getSamples(data, domain, stat)
   vars=c("integrated", "pr", "psl", "tas")
-  
   joinStats <- function(x, y, var){
     lev <- levels(x$GCM)
     left_join(
@@ -43,19 +41,19 @@ prepAppData <- function(data, domain, stat, monthly, local=TRUE){
   
   d.re <- d.sp <- d.sp2 <- vector("list", length(vars))
   for(i in seq_along(vars)){
-  file <- paste0("data/booterr_exact_", tolower(stat), "_", vars[i], "_", tolower(gsub("_", "", domain)), ".rds")
-  d.comp <- readRDS(file) %>% filter(Stat==stat)
-  d.re[[i]] <- map(vars[2:4], ~gcmPrep(filter(d.comp, Var==.x), "random ensembles") %>% mutate(Var=.x)) %>%
-    bind_rows(gcmPrep(d.comp, "random ensembles") %>% mutate(Var="integrated")) %>%
-    ungroup %>% mutate(Var=factor(Var, levels=vars)) %>% filter_(.dots=paste0("Var=='", vars[i], "'"))
-  d.sp[[i]] <- map(vars[2:4], ~gcmPrep(filter(d.comp, Var==.x), "spatial bootstrap", offset=FALSE) %>% mutate(Var=.x)) %>%
-    bind_rows(gcmPrep(d.comp, "spatial bootstrap", offset=FALSE) %>% mutate(Var="integrated")) %>% 
-    select(-Domain, -Stat, -Sample) %>% ungroup %>% mutate(Var=factor(Var, levels=vars)) %>%
-    filter_(.dots=paste0("Var=='", vars[i], "'"))
-  
-  monthly.tmp <   - filter(monthly, Domain==domain & Stat==stat & Var==vars[i])
-  d.sp2[[i]] <- joinStats(d.sp[[i]], monthly.tmp, vars[i])
+    file <- paste0("data/booterr_exact_", tolower(stat), "_", vars[i], "_", tolower(gsub("_", "", domain)), ".rds")
+    d.comp <- readRDS(file) %>% filter(Stat==stat)
+    d.re[[i]] <- map(vars[2:4], ~gcmPrep(filter(d.comp, Var==.x), "random ensembles") %>% mutate(Var=.x)) %>%
+      bind_rows(gcmPrep(d.comp, "random ensembles") %>% mutate(Var="integrated")) %>%
+      ungroup %>% mutate(Var=factor(Var, levels=vars)) %>% filter_(.dots=paste0("Var=='", vars[i], "'"))
+    d.sp[[i]] <- map(vars[2:4], ~gcmPrep(filter(d.comp, Var==.x), "spatial bootstrap", offset=FALSE) %>% mutate(Var=.x)) %>%
+      bind_rows(gcmPrep(d.comp, "spatial bootstrap", offset=FALSE) %>% mutate(Var="integrated")) %>% 
+      select(-Domain, -Stat, -Sample) %>% ungroup %>% mutate(Var=factor(Var, levels=vars)) %>%
+      filter_(.dots=paste0("Var=='", vars[i], "'"))
+    monthly.tmp <- filter(monthly, Domain==domain & Stat==stat & Var==vars[i])
+    d.sp2[[i]] <- joinStats(d.sp[[i]], monthly.tmp, vars[i])
   }
+  
   d.re <- bind_rows(d.re)
   d.sp <- bind_rows(d.sp)
   d.sp2 <- bind_rows(d.sp2) %>% mutate(Var=factor(Var, levels=vars))
@@ -66,4 +64,4 @@ prepAppData <- function(data, domain, stat, monthly, local=TRUE){
   cat(paste(file, "saved\n"))
 }
 
-walk2(rep(levels(d$Domain), 4), rep(levels(d$Stat), each=9), ~prepAppData(d, .x, .y, stats.mon, local=FALSE))
+walk2(rep(levels(d$Domain), 4), rep(levels(d$Stat), each=9), ~prepAppData(d, .x, .y, stats.mon, local=TRUE))
