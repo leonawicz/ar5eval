@@ -60,7 +60,7 @@ prepAppData <- function(data, domain, stat, monthly, local=TRUE){
   data <- list(samples=samples, sb.hm1=d.sp, sb.hm2=d.sp2, re=d.re)
   file <- paste0(stat, "_", domain, ".rds")
   if(local) saveRDS(data, file=paste0("ar5eval/data/", file))
-  if(!local) s3saveRDS(data, object=paste0("s3://mleonawicz/apps/ar5eval/", file))
+  if(!local) s3saveRDS(data, object=paste0("s3://leonawicz/apps/ar5eval/", file))
   cat(paste(file, "saved\n"))
 }
 
