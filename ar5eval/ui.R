@@ -86,7 +86,35 @@ dashboardPage(
       compositeModUI(id="low48"),
       compositeModUI(id="pacif"),
       tabItem(tabName="info",
-        p("A bit about this application..."),
+        h2("About this application"),
+        p("This app provides a detailed summary of SNAP's general circulation model (GCM) evaluation.
+          The evaluation is of historical climate model runs over several geographic domains with an Alaska and Arctic focus.
+          GCM performance is ranked based on minimum error with repsect to a European Re-Analysis (ERA-40) baseline data set
+          using several error metrics.
+          ", style="text-align:justify"),
+        p("The app enables exploration of model evaluation results pertaining to various spatial domains, climate variables
+          and error statistics as well as seasonal variability. It also shows suggested differences in model selection for ensemble
+          membership based on GCM rank variation across these dimensions of the data.", style="text-align:justify"),
+        p("Users can drill down into the climate model evaluation and explore comparative performance of GCMs in numerous and 
+          detailed ways depending on their areas of interest. The first tab in the app displays general results.
+          The second shows more detailed information for each geographic domain with a focus on bootstrapped performance rankings
+          across climate variables. The third tab explores composite model evaluation across geographic domains
+          with consideration of model selection criteria for ensemble membership."),
+        faq,
+        h2("Contact information"),
+        HTML('
+             <div style="clear: left;"><img src="https://www.gravatar.com/avatar/5ab20ebc3829054f8af7b1ea4a317269?s=128"
+             alt="" style="float: left; margin-right:5px" /></div>
+             <p>Matthew Leonawicz<br/>
+             Statistician | useR<br/>
+             <a href="http://leonawicz.github.io" target="_blank">Github.io</a> |
+             <a href="http://blog.snap.uaf.edu" target="_blank">Blog</a> |
+             <a href="https://twitter.com/leonawicz" target="_blank">Twitter</a> |
+             <a href="http://www.linkedin.com/in/leonawicz" target="_blank">Linkedin</a> <br/>
+             <a href="http://www.snap.uaf.edu/", target="_blank">Scenarios Network for Alaska and Arctic Planning</a>
+             </p>'
+        ),
+        p("For questions about this application, please email mfleonawicz@alaska.edu"),
         h3("Frequently asked questions"),
         faq,
         h3("Contact information"),
