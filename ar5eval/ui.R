@@ -100,6 +100,7 @@ dashboardPage(
           The second shows more detailed information for each geographic domain with a focus on bootstrapped performance rankings
           across climate variables. The third tab explores composite model evaluation across geographic domains
           with consideration of model selection criteria for ensemble membership."),
+        h2("Frequently asked questions"),
         faq,
         h2("Contact information"),
         HTML('
@@ -113,22 +114,6 @@ dashboardPage(
              <a href="http://www.linkedin.com/in/leonawicz" target="_blank">Linkedin</a> <br/>
              <a href="http://www.snap.uaf.edu/", target="_blank">Scenarios Network for Alaska and Arctic Planning</a>
              </p>'
-        ),
-        p("For questions about this application, please email mfleonawicz@alaska.edu"),
-        h3("Frequently asked questions"),
-        faq,
-        h3("Contact information"),
-        HTML('
-          <div style="clear: left;"><img src="http://www.gravatar.com/avatar/52c27b8719a7543b4b343775183122ea.png"
-            alt="" style="float: left; margin-right:5px" /></div>
-          <p>Matthew Leonawicz<br/>
-          Statistician | useR<br/>
-          <a href="http://leonawicz.github.io" target="_blank">Github.io</a> |
-          <a href="http://blog.snap.uaf.edu" target="_blank">Blog</a> |
-          <a href="https://twitter.com/leonawicz" target="_blank">Twitter</a> |
-          <a href="http://www.linkedin.com/in/leonawicz" target="_blank">Linkedin</a> <br/>
-          <a href="http://www.snap.uaf.edu/", target="_blank">Scenarios Network for Alaska and Arctic Planning</a>
-          </p>'
         ),
         p("For questions about this application, please email mfleonawicz@alaska.edu")
       )
