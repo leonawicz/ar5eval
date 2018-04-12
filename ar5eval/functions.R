@@ -29,7 +29,7 @@ gcmPlot <- function(x, var, type, size=1){
     geom_line(data=filter(x, Group=="Individual"), size=1) +
     labs(title="Estimated error", subtitle=expression(italic("by composite GCM size")),
          x="Number of GCMs in composite", y=prime.lab) +
-    scale_colour_manual(values=c("orange", "black", "royalblue"))
+    scale_colour_manual(values=c("firebrick1", "black", "cornflowerblue"))
   g
 }
 

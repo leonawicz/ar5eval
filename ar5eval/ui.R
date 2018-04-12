@@ -58,7 +58,7 @@ dashboardPage(
         ),
         fluidRow(box(title="", status="primary", width=12, height=0)),
         fluidRow(column(12, h4("GCM rankings and selection probability"))),
-        fluidRow(column(12, plotOutput("rankPlot", height=275))),
+        fluidRow(column(12, plotOutput("rankPlot", height=400))),
         fluidRow(column(12, plotOutput("top5Plot"))),
         fluidRow(
           column(3, selectInput("clrby", "Color by", grp_vars, width="100%")),
@@ -108,7 +108,7 @@ dashboardPage(
              alt="" style="float: left; margin-right:5px" /></div>
              <p>Matthew Leonawicz<br/>
              Statistician | useR<br/>
-             <a href="http://leonawicz.github.io" target="_blank">Github.io</a> |
+             <a href="https://leonawicz.github.io" target="_blank">Github.io</a> |
              <a href="http://blog.snap.uaf.edu" target="_blank">Blog</a> |
              <a href="https://twitter.com/leonawicz" target="_blank">Twitter</a> |
              <a href="http://www.linkedin.com/in/leonawicz" target="_blank">Linkedin</a> <br/>
