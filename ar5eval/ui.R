@@ -9,8 +9,6 @@ dashboardPage(
     )
   ),
   dashboardSidebar(
-    tags$head(includeScript("ga-ar5eval.js"), includeScript("ga-allapps.js")),
-    #useToastr(),
     introjsUI(),
     sidebarMenu(
       id="tabs",
