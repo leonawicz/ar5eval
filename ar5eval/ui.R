@@ -1,15 +1,25 @@
-faq <- source("faq.R", local=TRUE)[[1]]
+addResourcePath("res", snap_res())
+faqs <- c("gcm", "era40", "eval_domains", "eval_composite", "apps")
+
+intro_css_args <- list(
+  container = list(width = '800px', height = '400px'), 
+  toast = list(top = '100px', 'background-size' = '50% 400px'), 
+  rgba = c(60, 141, 188, 1), hover.rgba = c(60, 141, 188, 1), radius = '10px')
 
 dashboardPage(
   dashboardHeader(
-    title="AR5 GCM Evaluation",
-    tags$li(class="dropdown",
-            tags$a(href="http://snap.uaf.edu", target="_blank",
-                   tags$img(src="SNAP_acronym_100px.png", width="100%", alt="SNAP"), style="padding: 10px; margin: 0px;")
+    title = "AR5 GCM Evaluation",
+    tags$li(class = "dropdown",
+            tags$a(href = "http://snap.uaf.edu", target = "_blank",
+                   tags$img(src = "res/snap_acronym_white.png", width = "100%", alt = "SNAP"), style = "padding: 10px; margin: 0px;")
     )
   ),
   dashboardSidebar(
-    introjsUI(),
+    use_apputils(TRUE, TRUE),
+    useShinyjs(),
+    do.call(update_toastr_css, intro_css_args),
+    tags$head(tags$html(app_overlay(NULL, "res/snap_white.svg", "loading.png"))),
+    tags$script("$(document).ready(function(){ $('#fade-wrapper').fadeIn(); });"),
     sidebarMenu(
       id="tabs",
       menuItem("Spatial bootstrap", icon=icon("bar-chart"),
@@ -38,7 +48,8 @@ dashboardPage(
       menuItem("Information", icon=icon("info-circle"), tabName="info")
     ),
     actionButton("help", "Take tour", style="margin: 10px 15px 10px 15px; width: 200px",
-                 class="btn-flat action-button btn-block", icon=icon("question-circle"))
+                 class="btn-flat action-button btn-block", icon=icon("question-circle")),
+    dashboard_footer("http://snap.uaf.edu/", "res/snap_white.svg", "SNAP Dashboards")
   ),
   dashboardBody(
     includeCSS("www/styles.css"),
@@ -84,36 +95,10 @@ dashboardPage(
       compositeModUI(id="low48"),
       compositeModUI(id="pacif"),
       tabItem(tabName="info",
-        h2("About this application"),
-        p("This app provides a detailed summary of SNAP's general circulation model (GCM) evaluation.
-          The evaluation is of historical climate model runs over several geographic domains with an Alaska and Arctic focus.
-          GCM performance is ranked based on minimum error with repsect to a European Re-Analysis (ERA-40) baseline data set
-          using several error metrics.
-          ", style="text-align:justify"),
-        p("The app enables exploration of model evaluation results pertaining to various spatial domains, climate variables
-          and error statistics as well as seasonal variability. It also shows suggested differences in model selection for ensemble
-          membership based on GCM rank variation across these dimensions of the data.", style="text-align:justify"),
-        p("Users can drill down into the climate model evaluation and explore comparative performance of GCMs in numerous and 
-          detailed ways depending on their areas of interest. The first tab in the app displays general results.
-          The second shows more detailed information for each geographic domain with a focus on bootstrapped performance rankings
-          across climate variables. The third tab explores composite model evaluation across geographic domains
-          with consideration of model selection criteria for ensemble membership."),
+        about_app,
         h2("Frequently asked questions"),
-        faq,
-        h2("Contact information"),
-        HTML('
-             <div style="clear: left;"><img src="https://www.gravatar.com/avatar/5ab20ebc3829054f8af7b1ea4a317269?s=128"
-             alt="" style="float: left; margin-right:5px" /></div>
-             <p>Matthew Leonawicz<br/>
-             Statistician | useR<br/>
-             <a href="https://leonawicz.github.io" target="_blank">Github.io</a> |
-             <a href="http://blog.snap.uaf.edu" target="_blank">Blog</a> |
-             <a href="https://twitter.com/leonawicz" target="_blank">Twitter</a> |
-             <a href="http://www.linkedin.com/in/leonawicz" target="_blank">Linkedin</a> <br/>
-             <a href="http://www.snap.uaf.edu/", target="_blank">Scenarios Network for Alaska and Arctic Planning</a>
-             </p>'
-        ),
-        p("For questions about this application, please email mfleonawicz@alaska.edu")
+        faq(faqs, bscollapse_args = list(id = "faq", open = "apps"), showcase_args = list(drop = "ar5eval")),
+        contactinfo(snap = "res/snap_color.svg", iarc = "res/iarc.jpg", uaf = "res/uaf.png"), br()
       )
     )
   ),

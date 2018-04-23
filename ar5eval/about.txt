@@ -1,0 +1,17 @@
+This application summarizes key results of SNAP's general circulation model (GCM) statistical evaluation and model selection. 
+The evaluation is of historical climate model runs over several geographic domains with an Alaska and Arctic focus.
+GCM performance is ranked based on minimum error with repsect to a European Re-Analysis (ERA-40) baseline data set using several error metrics. 
+
+This is an application supplement to the publication:
+
+[add citation]
+
+The app enables exploration of model evaluation results pertaining to various spatial domains, climate variables
+and error statistics as well as seasonal variability. It also shows suggested differences in model selection for ensemble
+membership based on GCM rank variation across these dimensions of the data.
+
+Users can drill down into the climate model evaluation and explore comparative performance of GCMs in numerous and 
+detailed ways depending on their areas of interest. The first tab in the app displays general results.
+The second shows more detailed information for each geographic domain with a focus on bootstrapped performance rankings
+across climate variables. The third tab explores composite model evaluation across geographic domains
+with consideration of model selection criteria for ensemble membership.

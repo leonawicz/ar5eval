@@ -3,7 +3,27 @@ library(purrr)
 library(ggplot2)
 library(snapplot)
 
+app_intro <- list(
+  title = app_intro_title, message = app_intro_message, logo = app_intro_logo, 
+  toast_args = list(timeOut = 0, extendedTimeOut = 0)
+)
+
 shinyServer(function(input, output, session) {
+  
+  observe({
+    x <- actionButton("overview_btn", "Overview", class = "btn-block", icon("info-circle"))
+    showNotification("Need an overview?", action = x, duration = NULL, id = "overview_note", type = "message")
+  })
+  
+  observe({
+    input$overview_btn
+    isolate({
+      if(!is.null(input$overview_btn) && input$overview_btn > 0){
+        appintro(title = app_intro$title, message = app_intro$message, logo = app_intro$logo, 
+                 toast_args = app_intro$toast_args)
+      }
+    })
+  })
   
   source("tour.R", local=TRUE) # introjs tour
   
@@ -43,13 +63,14 @@ shinyServer(function(input, output, session) {
       geom_point(position=pos) + geom_crossbar(width=0.75, position=pos)
     if(input$fctby!="") g <- g + facet_wrap(as.formula(paste0("~", input$fctby)), scales="free")
     g + .theme + 
-      theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) +
+      theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank(),
+            strip.background = element_rect(color = "white", fill = "white")) +
       labs(title="Spatial bootstrap GCM performance rankings", 
            subtitle=bquote(italic(.(subtitle))), 
            y="Bootstrap GCM rank range and mean")
   })
   
-  output$top5Plot <- renderPlot({
+  plot_top5 <- reactive({
     .theme <- snapplot::theme_snap(base_size = 17)
     if(is.null(input$spdom) || is.null(input$stat) || is.null(input$vars)) return()
     pos <- if(!is.null(clrby())) position_dodge(width=0.75) else "identity"
@@ -58,11 +79,16 @@ shinyServer(function(input, output, session) {
                 aes_string(x="GCM", y="PropTop5", fill=clrby())) +
       geom_bar(stat="identity", position=pos, colour="black", width=0.75)
     if(input$fctby!="") g <- g + facet_wrap(as.formula(paste0("~", input$fctby)), scales="free")
-    g + .theme + theme(axis.text.x=element_text(angle=45, hjust=1, vjust=1)) +
+    g + .theme + theme(axis.text.x=element_text(angle=45, hjust=1, vjust=1),
+                       strip.background = element_rect(color = "white", fill = "white")) +
       labs(title="Probability of GCM among top five performers", 
            subtitle=bquote(italic(.(subtitle))), 
            x="GCM", y="P(among top five performing GCMs)")
   })
+  output$top5Plot <- renderPlot({ plot_top5() })
+  
+  # Observe plot for hiding launch overlay (must appear in code after plot_ts() is defined)
+  observe(if(!is.null(plot_top5())) shinyjs::hide("fade-wrapper", anim=TRUE, animType="fade", time=1))
   
   dom <- reactive(input$tabs)
   map(domains, ~callModule(spbootMod, paste0("sb", .x), .x, dom, snapplot::theme_snap(base_size = 18)))
