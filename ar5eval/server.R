@@ -29,7 +29,7 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$staticmap, {
     showModal(modalDialog(
-      title="AR5 GCM evalutation spatial domains",
+      title="AR5 GCM evaluation spatial domains",
       img(src='domain_map.png', align="center", style="width: 100%"),
       size="l", easyClose=TRUE, footer=NULL
       ))
