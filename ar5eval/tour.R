@@ -170,3 +170,27 @@ observeEvent(input$help, {
   )
   introjs(session, options=tour.options, events=tour.events)
 })
+
+quick.text <- tagList(
+  h4("Stage 1: GCM rankings"),
+  p("Rank GCMs by historical similarity to a European Re-Analysis (ERA-40) baseline. This stage involves a spatial bootstrap resampling on each geographic domain to estimate the sampling distribution of each error statistic.", style = "text-align:justify;"), 
+  h5("Select variables and settings"),
+  tags$ul(
+    tags$li("Error statistics (4), climate variables (3), spatial domains (9), and time."),
+    tags$li("Other settings: color and faceting for conditioning on variables; number and order of displayed GCMs.")
+  ),
+  h4("Plot types"),
+  tags$ul(
+    tags$li("Bootstrapped range of GCM performance rankings, plus mean ranks."),
+    tags$li("Probability of a GCM being among the top performers in terms of lowest estimated error.")
+  ),
+  h4("Stage 2: Composite models"),
+  p("Evaluate composite GCMs with different ensemble membership to assess the optimal number of GCMs to include in a composite model. Use statistical tests to validate model selection in the context of all available ensembles of a given size.", style = "text-align:justify;"),
+  p("A common and sensible hypothesis is that the best-performing (lowest estimated error) composite model is the ensemble composed of the best-performing individual GCMs.", style = "text-align:justify;"),
+  h5("Plot types"),
+  tags$ul(
+    tags$li("Monthly estimated error heat maps. Error reduction tends to attenuate after about five models in a composite. This is one of the simple visual indications for favoring a restricted ensemble membership of about five GCMs."),
+    tags$li("Permutation tests. While a specific membership is unlikely to be the best among multiple climate variables and error metrics, standardizing and integrating can lead to a robust model selection.")
+  ),
+  p("If you need more information on this app's functionality and background, the Detailed Tour provides in-depth explanations of the model evaluation procedure and each of the elements mentioned in this summary.", style = "text-align:justify;")
+)

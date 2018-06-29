@@ -29,10 +29,17 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$staticmap, {
     showModal(modalDialog(
-      title="AR5 GCM evaluation spatial domains",
-      img(src='domain_map.png', align="center", style="width: 100%"),
-      size="l", easyClose=TRUE, footer=NULL
+      title = "AR5 GCM evaluation spatial domains",
+      img(src = 'domain_map.png', align = "center", style = "width: 100%"),
+      size = "l", easyClose = TRUE, footer = NULL
       ))
+  })
+  
+  observeEvent(input$quick, {
+    showModal(modalDialog(
+      title = "Two stages of GCM evaluation", quick.text,
+      size="l", easyClose = TRUE, footer = NULL
+    ))
   })
   
   dsub <- reactive({ 
@@ -54,7 +61,7 @@ shinyServer(function(input, output, session) {
   })
   
   output$rankPlot <- renderPlot({
-    .theme <- snapplot::theme_snap(base_size = 17)
+    .theme <- snapplot::theme_snap(base_size = 16)
     if(is.null(input$spdom) || is.null(input$stat) || is.null(input$vars)) return()
     pos <- if(!is.null(clrby())) position_dodge(width=0.75) else "identity"
     subtitle <- paste("based on", period(), "error metric")
@@ -67,11 +74,11 @@ shinyServer(function(input, output, session) {
             strip.background = element_rect(color = "white", fill = "white")) +
       labs(title="Spatial bootstrap GCM performance rankings", 
            subtitle=bquote(italic(.(subtitle))), 
-           y="Bootstrap GCM rank range and mean")
+           y="GCM rank range and mean")
   })
   
   plot_top5 <- reactive({
-    .theme <- snapplot::theme_snap(base_size = 17)
+    .theme <- snapplot::theme_snap(base_size = 16)
     if(is.null(input$spdom) || is.null(input$stat) || is.null(input$vars)) return()
     pos <- if(!is.null(clrby())) position_dodge(width=0.75) else "identity"
     subtitle <- paste(period(), "spatial bootstrap of GCM ranking fifth or better")
@@ -79,11 +86,11 @@ shinyServer(function(input, output, session) {
                 aes_string(x="GCM", y="PropTop5", fill=clrby())) +
       geom_bar(stat="identity", position=pos, colour="black", width=0.75)
     if(input$fctby!="") g <- g + facet_wrap(as.formula(paste0("~", input$fctby)), scales="free")
-    g + .theme + theme(axis.text.x=element_text(angle=45, hjust=1, vjust=1),
+    g + .theme + theme(axis.text.x=element_text(angle=45, hjust=1, vjust=0.6),
                        strip.background = element_rect(color = "white", fill = "white")) +
       labs(title="Probability of GCM among top five performers", 
            subtitle=bquote(italic(.(subtitle))), 
-           x="GCM", y="P(among top five performing GCMs)")
+           x="GCM", y="P(in top five)")
   })
   output$top5Plot <- renderPlot({ plot_top5() })
   

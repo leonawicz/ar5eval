@@ -47,7 +47,9 @@ dashboardPage(
       ),
       menuItem("Information", icon=icon("info-circle"), tabName="info")
     ),
-    actionButton("help", "Take tour", style="margin: 10px 15px 10px 15px; width: 200px",
+    actionButton("quick", "Quick tour", style="margin: 10px 15px 10px 15px; width: 200px",
+                 class="btn-flat action-button btn-block", icon=icon("question-circle")),
+    actionButton("help", "Detailed tour", style="margin: 10px 15px 10px 15px; width: 200px",
                  class="btn-flat action-button btn-block", icon=icon("question-circle")),
     dashboard_footer("http://snap.uaf.edu/", "res/snap_white.svg", "SNAP Dashboards")
   ),
